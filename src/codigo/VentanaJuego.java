@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.Timer;
 
 /**
@@ -29,7 +31,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     static int ALTOPANTALLA = 450;
 
     //numero de marcianos que van a aparecer
-    int filas = 8;
+    int filas = 6;
     int columnas = 10;
 
     BufferedImage buffer = null;
@@ -49,6 +51,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             bucleDelJuego();
+         
         }
     });
 
@@ -70,7 +73,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         buffer = (BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);
         buffer.createGraphics();
-
+        musica("/sonidos/caro.wav");
         temporizador.start();
 
         //inicializo la posición inicial de la nave
@@ -84,14 +87,13 @@ public class VentanaJuego extends javax.swing.JFrame {
         //1 parametro: numero de la fila de marcianos que estoy creando
         //2º parametro: fila dentro del spritesheet del marciano que quiero pintar
         //3º parametro: columna dentro del spritesheet del marciano que quiero pintar
-        creaFilaDeMarcianos(0, 0, 2);
+        creaFilaDeMarcianos(0, 4, 0);
         creaFilaDeMarcianos(1, 2, 2);
         creaFilaDeMarcianos(2, 4, 0);
         creaFilaDeMarcianos(3, 0, 2);
         creaFilaDeMarcianos(4, 0, 2);
         creaFilaDeMarcianos(5, 0, 2);
-        creaFilaDeMarcianos(6, 0, 2);
-        creaFilaDeMarcianos(7, 0, 2);        
+      
     }
   
     
@@ -103,6 +105,7 @@ public class VentanaJuego extends javax.swing.JFrame {
           listaMarcianos[numeroFila][j].x = j * (15 + listaMarcianos[numeroFila][j].imagen1.getWidth(null));
           listaMarcianos[numeroFila][j].y = numeroFila * (10 + listaMarcianos[numeroFila][j].imagen1.getHeight(null));
       }
+
   }  
     
     /*
@@ -197,7 +200,25 @@ public class VentanaJuego extends javax.swing.JFrame {
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 listaMarcianos[i][j].setvX(listaMarcianos[i][j].getvX()* -1);
+                listaMarcianos[i][j].y+=15;
             }
+        }
+    }
+    
+    private void musica (String cancion) {
+        try {
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream(getClass().getResource(cancion)));
+            clip.loop(0);
+            Thread one = new Thread() {
+                public void run() {
+                    while (clip.getFramePosition()<clip.getFrameLength())
+                        Thread.yield();
+                }
+            };
+            one.start();
+        } catch (Exception e) {
+            
         }
     }
     
@@ -291,6 +312,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                 miNave.setPulsadoDerecha(true);
                 break;
             case KeyEvent.VK_SPACE:
+                
                 miDisparo.posicionaDisparo(miNave);
                 miDisparo.disparado = true;
                 break;
