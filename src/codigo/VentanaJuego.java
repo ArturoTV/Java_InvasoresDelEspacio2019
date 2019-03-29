@@ -33,6 +33,8 @@ public class VentanaJuego extends javax.swing.JFrame {
     //numero de marcianos que van a aparecer
     int filas = 6;
     int columnas = 10;
+    
+    boolean gameOver = false;
 
     BufferedImage buffer = null;
 
@@ -148,6 +150,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         //primero borro todo lo que hay en el buffer
         contador++;
         Graphics2D g2 = (Graphics2D) buffer.getGraphics();
+        if(!gameOver){
+
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
 
@@ -162,15 +166,24 @@ public class VentanaJuego extends javax.swing.JFrame {
         /////////////////////////////////////////////////////////////
         //*****************   fase final, se dibuja ***************//
         //*****************   el buffer de golpe sobre el Jpanel***//
-
+        }
+        else{
+            try{
+                finPartida(g2);
+            }
+            catch (IOException ex){
+                
+            }
+        }
         g2 = (Graphics2D) jPanel1.getGraphics();
         g2.drawImage(buffer, 0, 0, null);
-
+        
     }
 
     private void chequeaColision(){
         Rectangle2D.Double rectanguloMarciano = new Rectangle2D.Double();
         Rectangle2D.Double rectanguloDisparo = new Rectangle2D.Double();
+        Rectangle2D.Double rectanguloNave = new Rectangle2D.Double();
         
         rectanguloDisparo.setFrame( miDisparo.x, 
                                     miDisparo.y,
@@ -190,6 +203,10 @@ public class VentanaJuego extends javax.swing.JFrame {
                         miDisparo.posicionaDisparo(miNave);
                         miDisparo.y = 1000;
                         miDisparo.disparado = false;
+                    }
+                    rectanguloNave.setFrame(miNave.x, miNave.y, miNave.imagen.getWidth(null), miNave.imagen.getHeight(null));
+                    if(rectanguloNave.intersects(rectanguloMarciano)){
+                        gameOver=true;
                     }
                 }
             }
@@ -220,6 +237,16 @@ public class VentanaJuego extends javax.swing.JFrame {
         } catch (Exception e) {
             
         }
+    }
+    
+    private void finPartida(Graphics2D muerto) throws IOException{
+        try{
+            Image gameover1 = ImageIO.read(getClass().getResource("/imagenes/goku.png"));   
+        }
+        catch(IOException ex){
+            
+        }
+        
     }
     
     private void pintaMarcianos(Graphics2D _g2) {
